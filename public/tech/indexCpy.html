@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="techApp">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Deep Blue Admin</title>
+
+    <link rel="stylesheet" type="text/css" href="../../tech/bootstrap/css/bootstrap.css"/>
+    <link rel="stylesheet" type="text/css" href="../../tech/font-awesome/css/font-awesome.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../../tech/css/local.css"/>
+
+    <script type="text/javascript" src="../../tech/js/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="../../tech/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../tech/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../../ng-table/ng-table.css"></script>
+    <script src="../../tech/js/js.js"></script>
+    <script src="../../angular/angular.js"></script>
+    <script src="../../angular-animate/angular-animate.js"></script>
+    <script src="../../ng-table/ng-table.js"></script>
+    <script src="../../tech/js/controllers.js"></script>
+
+    <!-- you need to include the shieldui css and js assets in order for the charts to work -->
+    <link rel="stylesheet" type="text/css"
+          href="http://www.shieldui.com/shared/components/latest/css/shieldui-all.min.css"/>
+    <link rel="stylesheet" type="text/css"
+          href="http://www.shieldui.com/shared/components/latest/css/light-bootstrap/all.min.css"/>
+
+</head>
+<body ng-controller="MachineListCtrl">
+{{rawData}}
+<!--       machine: {{JSON.stringify(currentMachine)}}
+{{currentMachine}}-->
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h3 class="panel-title"><i class="fa fa-bar-chart-o"></i> {{tableName}}</h3>
+            </div>
+            <div class="panel-body">
+
+                <div id="shieldui-grid1"></div>
+                <div id="machineTable" ng-show="machineTable">
+
+                    <table ng-table="machineTableParams" show-filter="true" class="table myTable">
+
+                        <tr ng-repeat="machine in machinesSplc" ng-click="getMachine(machine)">
+                            <td data-title="'Machine Name'" filter="{ 'name': 'text' }"> {{machine.name}}</td>
+                            <td data-title="'Machine Id'">{{machine.id}}</td>
+                        </tr>
+                    </table>
+                </div>
+
+                <!--  ================== specific machine data: =============-->
+                <div ng-show="!machineTable" class="tabs">
+                    <section>
+                        <!-- create machhine categoriesMachine category:-->
+                        <ul ng-init="selectedCategory = 1">
+                           <div id="categoryContainer">
+                            <li class="tab-links" >
+                                <div id="categories">
+                                    <ul>
+                                        <li class="liTab" ng-repeat="(category , value) in machineCategories" ng-class="{active: selectedCategory == ($index+1) }">
+                                            <a href ng-click="setSelected($index+1); setSubSelected(1)"> {{selectedCategory.value}} {{category}} </a>
+                                        </li>
+
+                                    </ul>
+                                </div>
+
+
+                                <div id="subCategories" >
+                                    <ul class="animate-show"  ng-repeat="category in machineCategories" ng-show=" selectedCategory == ($index+1)" >
+                                        <li  id="subCatLabl" class="liTab" ng-repeat="(subCategory , value) in category" ng-class="{active: selectedSubCategory == ($index+1) }">
+                                            <b href ng-click="setSubSelected($index+1, value)"> {{subCategory}}</b>
+                                        </li>
+                                        <div id="subsub" ng-repeat="(subCategory , value)  in category" ng-show="selectedSubCategory === ($index+1)">
+                                            <div id="counterTable" >
+
+                                                <table ng-table="resultTable" class="table myTable">
+
+                                                    <tbody>
+                                                    <tr>
+                                                        <th>Type: </th>
+                                                        <th>value:</th>
+                                                    </tr>
+                                                    <tr ng-repeat="(type,val) in value">
+                                                        <td>{{type}}   </td>
+                                                        <td>{{val}}</td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </ul>
+                                </div>
+                            </li>
+                           </div>
+
+                        </ul>
+                    </section>
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+</div>
+</div>
+<!-- /#wrapper -->
+
+
+</body>
+</html>

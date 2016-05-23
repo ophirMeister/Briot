@@ -1,0 +1,2 @@
+program fils mongo bin: mongod.exe --dbpath "C:\Users\Negan\Documents\Briot\Briot\node-js-getting-started"
+

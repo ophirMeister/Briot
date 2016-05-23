@@ -1,0 +1,1 @@
+add notification that machine is currently being fetched by someone else.

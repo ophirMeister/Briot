@@ -1,0 +1,1001 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="techApp">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Dashboard - Deep Blue Admin</title>
+
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="../../tech/font-awesome/css/font-awesome.min.css"/>
+    <link rel="stylesheet" type="text/css" href="../../tech/css/local.css"/>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.min.css">
+
+
+    <!-- Latest compiled and minified Locales -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.8.1/bootstrap-table.min.js"></script>
+
+    <script type="text/javascript" src="../../ng-table/dist/ng-table.css"></script>
+
+    <script src="../../angular/angular.js"></script>
+    <script src="../../angular-animate/angular-animate.js"></script>
+    <script src="../../ng-table/dist/ng-table.js"></script>
+    <script src="../../tech/js/controllers2.js"></script>
+    <script src="../../tech/js/fieldDictionary.js"></script>
+
+</head>
+<body ng-controller="MachineListCtrl">
+
+<div id="wrapper" class="container-fluid">
+    <!-------------------------------------------------------------------->
+    <!----------------------------- NAVBAR ------------------------------->
+    <!-------------------------------------------------------------------->
+
+    <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-ex1-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="index.html">Admin Panel</a>
+        </div>
+        <div class="collapse navbar-collapse navbar-ex1-collapse">
+            <ul class="nav navbar-nav navbar-right navbar-user">
+                <li class="dropdown messages-dropdown">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-envelope"></i> Messages
+                        <span class="badge">2</span> <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li class="dropdown-header">2 New Messages</li>
+                        <li class="message-preview">
+                            <a href="#">
+                                <span class="avatar"><i class="fa fa-bell"></i></span>
+                                <span class="message">Security alert</span>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li class="message-preview">
+                            <a href="#">
+                                <span class="avatar"><i class="fa fa-bell"></i></span>
+                                <span class="message">Security alert</span>
+                            </a>
+                        </li>
+                        <li class="divider"></li>
+                        <li><a href="#">Go to Inbox <span class="badge">2</span></a></li>
+                    </ul>
+                </li>
+                <li class="dropdown user-dropdown">
+                    <!--<a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i><script>document.write(user)</script><b class="caret"></b></a>-->
+                    <ul class="dropdown-menu">
+                        <li><a href="#"><i class="fa fa-user"></i> Profile</a></li>
+                        <li><a href="#"><i class="fa fa-gear"></i> Settings</a></li>
+                        <li class="divider"></li>
+                        <li><a href="#"><i class="fa fa-power-off"></i> Log Out</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-------------------------------------------------------------------->
+    <!------------------------ choices square ---------------------------->
+    <!-------------------------------------------------------------------->
+
+
+    <!-- Tab panes -->
+
+    <div id="page-wrapper">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1>Briot-Link
+                    <small>Tech-Maintenance Home</small>
+                </h1>
+            </div>
+        </div>
+
+        <section>
+
+            <div>
+
+                <!-- Nav tabs -->
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active" id="listTab" ng-click="machineTable = false;
+                    machineLoaded = false">
+                        <a href="#machineList" aria-controls="machineList"
+                           role="tab"
+                           data-toggle="tab">Machine List
+                        </a>
+                    </li>
+                    <li role="presentation" ng-click="searchMachineTab()" id="searchTab">
+                        <a href="#searchMachine"
+                           aria-controls="searchMachine"
+                           role="tab"
+                           data-toggle="tab">Search Machine
+                        </a>
+                    </li>
+
+                </ul>
+                <div id="updateToolbar" class="btn-group">
+                    <button type="button" id="updateButton" class="btn btn-default" href="#updateMachineModal"
+                            data-toggle="modal" ng-click="getLatestUpdate">
+                        <i class="glyphicon glyphicon-flag"></i>
+                    </button>
+                    <button type="button" id="addDevice" class="btn btn-default" href="#addMachineModal"
+                            data-toggle="modal">
+                        <i class="glyphicon glyphicon-plus" title="Add New Device"></i>
+                    </button>
+
+                </div>
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="machineList">
+                        <div id="machineTable" ng-show="devicesTable" class="table-responsive">
+
+
+                            <table id="deviceListTable" data-classes="table table-hover table-condensed"
+                                   data-striped="true" data-search="true" data-show-columns="true"
+                                   data-click-to-select="true" data-sort-order="desc" data-toolbar="#updateToolbar">
+
+                            </table>
+
+
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="searchMachine">
+                        <div id="searchBox" ng-show="searchBox">
+                            <form ng-submit="getMachine(text ,server)" ng-show="!fetching" class="form-inline">
+
+                                <div class="form-group">
+                                    <label class="control-label" for="machineId">Device
+                                        ID:</label>
+
+
+                                    <input required="" name="machineId" type="text"
+                                           class="form-control" placeholder="Device ID" class="input-medium"
+                                           required="" ng-model="text" placeholder="enter machine ID...">
+
+
+                                </div>
+                                <div class="form-group">
+                                    <label class="control-label" for="serverSelect">Server:</label>
+                                    <select class="form-control" required=""
+                                            ng-model="server" name="serverSelect">
+                                        <option selected disabled hidden value=''></option>
+                                        <option data-value="USA">USA</option>
+                                        <option data-value="Europe">Europe</option>
+                                    </select>
+
+
+                                </div>
+                                <div class="form-group">
+                                    <input type="submit" value="Get Device" class="btn btn-default">
+
+                                </div>
+
+
+                            </form>
+                            <div id="status">
+                                <p id="fetchStaus">
+                                    {{status}}
+                                </p>
+
+
+                                <!--loader anim-->
+                                <tab ng-show="!machineLoaded">
+                                    <svg width="70" height="20" ng-show="fetching">
+                                        <rect width="20" height="20" x="0" y="0" rx="3" ry="3">
+                                            <animate attributeName="width" values="0;20;20;20;0" dur="1000ms"
+                                                     repeatCount="indefinite"/>
+                                            <animate attributeName="height" values="0;20;20;20;0" dur="1000ms"
+                                                     repeatCount="indefinite"/>
+                                            <animate attributeName="x" values="10;0;0;0;10" dur="1000ms"
+                                                     repeatCount="indefinite"/>
+                                            <animate attributeName="y" values="10;0;0;0;10" dur="1000ms"
+                                                     repeatCount="indefinite"/>
+                                        </rect>
+                                        <rect width="20" height="20" x="25" y="0" rx="3" ry="3">
+                                            <animate attributeName="width" values="0;20;20;20;0" begin="200ms"
+                                                     dur="1000ms"
+                                                     repeatCount="indefinite"/>
+                                            <animate attributeName="height" values="0;20;20;20;0" begin="200ms"
+                                                     dur="1000ms"
+                                                     repeatCount="indefinite"/>
+                                            <animate attributeName="x" values="35;25;25;25;35" begin="200ms"
+                                                     dur="1000ms"
+                                                     repeatCount="indefinite"/>
+                                            <animate attributeName="y" values="10;0;0;0;10" begin="200ms"
+                                                     dur="1000ms"
+                                                     repeatCount="indefinite"/>
+                                        </rect>
+                                        <rect width="20" height="20" x="50" y="0" rx="3" ry="3">
+                                            <animate attributeName="width" values="0;20;20;20;0" begin="400ms"
+                                                     dur="1000ms"
+                                                     repeatCount="indefinite"/>
+                                            <animate attributeName="height" values="0;20;20;20;0" begin="400ms"
+                                                     dur="1000ms"
+                                                     repeatCount="indefinite"/>
+                                            <animate attributeName="x" values="60;50;50;50;60" begin="400ms"
+                                                     dur="1000ms"
+                                                     repeatCount="indefinite"/>
+                                            <animate attributeName="y" values="10;0;0;0;10" begin="400ms"
+                                                     dur="1000ms"
+                                                     repeatCount="indefinite"/>
+                                        </rect>
+                                    </svg>
+                                </tab>
+                                <!-- loader anim end-->
+                            </div>
+                        </div>
+
+
+                        <!-- talbe containg results: //////*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*-->
+
+                        <div class="row" ng-show="machineTable">
+                            <!--<div class="col-lg-8">-->
+                            <div class="panel panel-primary">
+                                <div class="panel-heading">
+                                    <h3 class="panel-title"><i class="fa fa-bar-chart-o"></i> {{tableName}}
+                                    </h3>
+                                </div>
+                                <div class="panel-body">
+                                    <!--for each availavle date, present table-->
+                                    <!--<div id="dataEntries" ng-repeat="entry in dataEntries">-->
+                                    <!--<div id="devices">-->
+                                    <!--<ul>-->
+                                    <!--<li class="liTab"-->
+                                    <!--ng-repeat="(category , value) in entry"-->
+                                    <!--ng-class="{active: selectedCategory == ($index+1) }">-->
+                                    <!--<a href ng-click="setSelected($index+1); setSubSelected(1)">-->
+                                    <!--{{selectedCategory.value}} {{category}} </a>-->
+                                    <!--</li>-->
+
+                                    <!--</ul>-->
+                                    <!--</div>-->
+                                    <!--</div>-->
+                                    <!--  ================== specific machine data: =============-->
+                                    <div class="tabs">
+                                        <section>
+                                            <!-- create machhine categoriesMachine category:-->
+                                            <ul ng-init="selectedCategory = 1">
+                                                <div id="categoryContainer">
+                                                    <li class="tab-links">
+                                                        <div id="categories">
+
+
+                                                            <div class="bs-example">
+                                                                <div class="btn-group device-results"
+                                                                     data-toggle="buttons"
+                                                                     ng-show="ftpReturned">
+                                                                    <label class=" btn btn-danger"
+                                                                           ng-click="selectedDevices(numberOfEntries)">
+                                                                        <input type="checkbox"> Current
+                                                                    </label>
+                                                                </div>
+                                                                <div class="btn-group device-results"
+                                                                     data-toggle="buttons"
+                                                                     ng-repeat="entry in dataEntriesDates">
+                                                                    <label class="btn btn-success"
+                                                                           ng-click="selectedDevices($index)"
+                                                                           data-toggle="tooltip"
+                                                                           data-placement="top"
+                                                                           title="{{entry.time}}">
+                                                                        <input type="checkbox"> {{entry.day}}
+                                                                    </label>
+
+                                                                </div>
+                                                            </div>
+
+                                                            <ul>
+
+
+                                                            </ul>
+
+                                                            <ul>
+                                                                <li class="liTab"
+                                                                    ng-repeat="(category , value) in machineCategories"
+                                                                    ng-class="{active: selectedCategory == ($index+1) }">
+                                                                    <a href
+                                                                       ng-click="setSelected($index+1); setSubSelected(1)">
+                                                                        {{selectedCategory.value}}
+                                                                        {{category}} </a>
+                                                                </li>
+
+                                                            </ul>
+                                                        </div>
+
+
+                                                        <div id="subCategories">
+                                                            <ul class="animate-show"
+                                                                ng-repeat="(categoryType,category) in machineCategories"
+                                                                ng-show=" selectedCategory == ($index+1)">
+                                                                <li id="subCatLabl" class="liTab"
+                                                                    ng-repeat="(subCategory , value) in category"
+                                                                    ng-class="{active: selectedSubCategory == ($index+1) }">
+                                                                    <b href
+                                                                       ng-click="setSubSelected($index+1, value)">
+                                                                        {{subCategory}}</b>
+                                                                </li>
+                                                                <div id="subsub"
+                                                                     ng-repeat="(subCategory , value)  in category"
+                                                                     ng-show="selectedSubCategory === ($index+1)">
+                                                                    <div id="counterTable">
+
+                                                                        <table ng-table="resultTable"
+                                                                               class="table myTable table-bordered"
+                                                                               id="deviceResultTable">
+
+
+                                                                            <tbody>
+                                                                            <tr>
+                                                                                <th>
+                                                                                    Type:
+                                                                                </th>
+                                                                                <th ng-show="showDevices[numberOfEntries]">
+                                                                                    current:
+                                                                                </th>
+                                                                                <th ng-repeat="entry in dataEntriesDates"
+                                                                                    ng-show="showDevices[$index]">
+                                                                                    <!--<label-->
+                                                                                    <!--data-toggle="tooltip"-->
+                                                                                    <!--data-placement="bottom"-->
+                                                                                    <!--title="{{entry.time}}">-->
+                                                                                    <!--{{entry.day}}-->
+                                                                                    <!--</label>-->
+                                                                                    {{entry.day}}<br>{{entry.time}}
+                                                                                </th>
+                                                                            </tr>
+                                                                            <tr ng-repeat="(type,val) in value">
+                                                                                <td data-title="'Type'">
+                                                                                    {{type}}
+                                                                                </td>
+                                                                                <td ng-show="showDevices[numberOfEntries]">
+                                                                                    {{machineCategoriesFTP[categoryType][subCategory][type]}}
+                                                                                </td>
+                                                                                <td
+                                                                                        ng-repeat="entry in entryCounter"
+                                                                                        ng-show="showDevices[$index]">
+                                                                                    {{val[entry]}}
+                                                                                </td>
+
+                                                                                <!--<td>{{type}}</td>-->
+                                                                                <!--<td>{{val}}</td>-->
+                                                                            </tr>
+                                                                            </tbody>
+                                                                        </table>
+
+
+                                                                    </div>
+                                                                </div>
+                                                            </ul>
+                                                        </div>
+                                                    </li>
+                                                </div>
+
+                                            </ul>
+                                        </section>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!--</div>-->
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!--<div ng-click="addDeviceSuccess = true" href="#addMachineModal" role="button" data-toggle="modal"-->
+            <!--class='square-box'>-->
+            <!--<div class='square-content'>-->
+            <!--<div><span>Add machine</span></div>-->
+            <!--</div>-->
+            <!--</div>-->
+
+        </section>
+
+
+        <!--add machine modal-->
+        <div id="addMachineModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel"
+             aria-hidden="true">
+
+
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 id="myModalLabel">New Device</h3>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container-fluid" ng-show="addDeviceSuccess">
+                            <form class="form-horizontal">
+                                <fieldset>
+
+                                    <div class="row">
+
+                                        <div class="col-md-4">
+                                            <label class="control-label" for="machineId">Device
+                                                ID:</label>
+
+                                            <div class="controls">
+                                                <input required="" id="deviceId" name="deviceId" type="text"
+                                                       class="form-control" placeholder="Device ID" class="input-medium"
+                                                       required="">
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="control-label" for="deviceServer">Server Location:</label>
+
+                                            <div class="controls">
+                                                <select class="form-control" required="" id="deviceServer"
+                                                        name="deviceServer">
+                                                    <option selected disabled hidden value=''></option>
+                                                    <option data-value="USA">USA</option>
+                                                    <option data-value="Europe">Europe</option>
+                                                </select>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="control-label" for="Optician_Shop">Optician Shop:</label>
+
+                                            <div class="controls">
+                                                <input id="Optician_Shop" name="Optician_Shop" type="text"
+                                                       class="form-control" placeholder="optician shop"
+                                                       class="input-medium"
+                                                        >
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+
+                                    <!--Row 2-->
+                                    <div class="row">
+
+                                        <div class="col-md-3">
+                                            <label class="control-label" for="Optician_Name">Optician Name:</label>
+
+                                            <div class="controls">
+                                                <input id="Optician_Name" name="Optician_Name" type="text"
+                                                       class="form-control" placeholder="optician name"
+                                                       class="input-medium"
+                                                        >
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="control-label" for="Optician_Surname">Optician
+                                                Surname:</label>
+
+                                            <div class="controls">
+                                                <input id="Optician_Surname" name="Optician_Surname"
+                                                       type="text"
+                                                       class="form-control" placeholder="optician surename"
+                                                       class="input-medium"
+                                                        >
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="control-label" for="Address">Address:</label>
+
+                                            <div class="controls">
+                                                <input id="Address" name="Address" type="text"
+                                                       class="form-control" placeholder="address" class="input-medium"
+                                                        >
+                                            </div>
+
+                                        </div>
+                                    </div>
+                                    <!--Row 3-->
+                                    <div class="row">
+
+
+                                        <div class="col-md-2">
+                                            <label class="control-label" for="Country">Country:</label>
+
+                                            <div class="controls">
+                                                <input id="Country" name="Country" type="text"
+                                                       class="form-control" placeholder="country" class="input-medium"
+                                                        >
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-2    ">
+                                            <label class="control-label" for="State">State:</label>
+
+                                            <div class="controls">
+                                                <input id="State" name="State" type="text"
+                                                       class="form-control" placeholder="state" class="input-medium"
+                                                        >
+                                            </div>
+
+                                        </div>
+
+                                        <div class="col-md-2">
+                                            <label class="control-label" for="City">City:</label>
+
+                                            <div class="controls">
+                                                <input id="City" name="City" type="text"
+                                                       class="form-control" placeholder="City" class="input-medium"
+                                                        >
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="control-label" for="Zip">Zip:</label>
+
+                                            <div class="controls">
+                                                <input id="Zip" name="Zip" type="text"
+                                                       class="form-control" placeholder="zip" class="input-medium"
+                                                        >
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="control-label" for="Zone">Zone:</label>
+
+                                            <div class="controls">
+                                                <input id="Zone" name="Zone" type="text"
+                                                       class="form-control" placeholder="zone" class="input-medium"
+                                                        >
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label class="control-label" for="Group">Group:</label>
+
+                                            <div class="controls">
+                                                <input id="Group" name="Group" type="text"
+                                                       class="form-control" placeholder="group" class="input-medium"
+                                                        >
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!--Row 4-->
+                                    <div class="row">
+
+                                        <div class="col-md-3">
+                                            <label class="control-label" for="Email">Email:</label>
+
+                                            <div class="controls">
+                                                <input id="Email" name="Email" type="email"
+                                                       class="form-control" placeholder="email" class="input-medium"
+                                                        >
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="control-label" for="Phone_Number">Phone Number:</label>
+
+                                            <div class="controls">
+                                                <input id="Phone_Number" name="Phone_Number" type="text"
+                                                       class="form-control" placeholder="Phone Number"
+                                                       class="input-medium"
+                                                        >
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="control-label" for="Mobile_Number">Mobile Number:</label>
+
+                                            <div class="controls">
+                                                <input id="Mobile_Number" name="Mobile_Number" type="text"
+                                                       class="form-control" placeholder="Mobile Number"
+                                                       class="input-medium"
+                                                        >
+                                            </div>
+
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label class="control-label" for="Fax">Fax:</label>
+
+                                            <div class="controls">
+                                                <input id="Fax" name="Fax" type="text"
+                                                       class="form-control" placeholder="Fax Number"
+                                                       class="input-medium"
+                                                        >
+                                            </div>
+
+                                        </div>
+
+                                        <!--Add device form-->
+
+                                    </div>
+                                    <br><br>
+                                    <center>
+                                        <button id="addDeviceSubmit" type="submit" class="btn btn-success">Add Device
+                                        </button>
+
+                                    </center>
+
+                                </fieldset>
+                            </form>
+                        </div>
+                        <div class="container-fluid" ng-show="!addDeviceSuccess">
+
+                            <br><br>
+
+                            <h1 class="text-center device-success"><span class="glyphicon glyphicon-ok"
+                                                                         aria-hidden="true"></span> Device Added</h1>
+                            <br><br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <!--update machine modal-->
+        <div id="updateMachineModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+             aria-hidden="true">
+
+
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3>Update Devices</h3>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container-fluid" ng-show="addDeviceSuccess">
+                            <form class="form-horizontal">
+                                <fieldset>
+
+
+                                    <div class="row">
+                                        <!--<div class="row">-->
+                                            <!--<label class="control-label" for="latestUpdateTable">Choose Existing:</label>-->
+                                            <!--<table id="latestUpdateTable"-->
+                                                   <!--data-classes="table table-hover table-condensed selectExisting"-->
+                                                   <!--data-striped="true"-->
+                                                   <!--data-click-to-select="true">-->
+                                            <!--</table>-->
+                                        <!--</div>-->
+                                        <div class="row" >
+                                            <div class="controls">
+                                                <label class="control-label" for="latestUpdateTable">Upload New:</label>
+
+                                                <input type="file" id="updateInputFile">
+
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-sm-6">
+                                                    <label class="control-label" for="Version">Version:</label>
+
+                                                    <div class="controls">
+                                                        <input id="Version" name="Version" type="text"
+                                                               class="form-control" placeholder="version"
+                                                               class="input-medium"
+                                                                >
+                                                    </div>
+
+                                                </div>
+                                                <div class="col-sm-6">
+                                                    <label class="control-label" for="Comment">Comment:</label>
+
+                                                    <div class="controls">
+                                                        <input id="Comment" name="Comment" type="text"
+                                                               class="form-control" placeholder="Comment"
+                                                               class="input-medium"
+                                                                >
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                    <!--Row 2-->
+
+                                    <!--Row 3-->
+
+
+                                    <br><br>
+                                    <center>
+                                        <button id="sendUpdate" type="submit" class="btn btn-success">Send Update Request
+                                        </button>
+
+                                    </center>
+
+                                </fieldset>
+                            </form>
+                        </div>
+                        <div class="container-fluid" ng-show="!addDeviceSuccess">
+
+                            <br><br>
+
+                            <h1 class="text-center device-success"><span class="glyphicon glyphicon-ok"
+                                                                         aria-hidden="true"></span> Device Added</h1>
+                            <br><br>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--<button type="button" id="addDevice" class="btn btn-default" href="#deviceDateModal" data-toggle="modal">-->
+        <!--</button>-->
+
+        <div id="deviceDateModal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel"
+             aria-hidden="true">
+
+
+            <div class="modal-dialog modal-sm">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+                        <h3 id="myModalLabel">Select Info Dates</h3>
+                    </div>
+                    <div class="modal-body">
+                        <div class="container-fluid" ng-show="addDeviceSuccess">
+                            <form class="form-horizontal">
+                                <table id="deviceDateTable" data-classes="table table-hover table-condensed"
+                                       data-striped="true"
+                                       data-click-to-select="true">
+                                </table>
+
+                            </form>
+                        </div>
+                        <br><br>
+                        <center>
+                            <button id="addSelectedDates" type="submit" class="btn btn-success">Show Devices
+                            </button>
+
+                        </center>
+
+                        </fieldset>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!--talbe containg results: //////*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*/*-->
+
+
+    <!--<div class="choices-square">-->
+
+    <!--<div class='square-content'>-->
+    <!--<div>-->
+
+    <!--<div class="inner-square search-square">-->
+
+    <!--<!--<div class="col-xs-5">-->
+    <!--<!--<i class="fa fa-search fa-5x"></i>-->
+    <!--<!--</div>-->
+    <!--<!--<div class="col-xs-5 text-right">-->
+    <!--<!--<p class="alerts-heading" id="search-machine">Search machine</p>-->
+    <!--<!--</div>-->
+    <!--</div>-->
+    <!--<!--<div class="inner-square ">-->
+    <!--<!--<!--<div class="col-xs-5">-->
+    <!--<!--<!--<i class="fa fa-exclamation fa-5x"></i>-->
+    <!--<!--<!--</div>-->
+    <!--<!--<!--<div class="col-xs-5 text-right">-->
+    <!--<!--<!--<p class="alerts-heading">7</p>-->
+
+    <!--<!--<!--<p class="alerts-text">Machine error notices</p>-->
+    <!--<!--<!--</div>-->
+    <!--<!--</div>-->
+    <!--<!--<div class="inner-square">-->
+
+    <!--<!--<!--<div class="col-xs-5">-->
+    <!--<!--<!--<i class="fa fa-laptop fa-5x"></i>-->
+    <!--<!--</div>-->
+    <!--<!--<div class="col-xs-5 text-right">-->
+    <!--<!--<p class="alerts-heading">{{numOfMachines}}</p>-->
+
+    <!--<!--<p class="alerts-text">Machines connected</p>-->
+    <!--<!--</div>-->
+    <!--</div>-->
+
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--<div class="row" id="notifications">-->
+    <!--<div class="col-lg-3">-->
+    <!--<div class="panel panel-default ">-->
+    <!--<div class="panel-body alert-info">-->
+    <!--<div class="col-xs-5">-->
+    <!--<i class="fa fa-laptop fa-5x"></i>-->
+    <!--</div>-->
+    <!--<div class="col-xs-5 text-right">-->
+    <!--<p class="alerts-heading">{{numOfMachines}}</p>-->
+
+    <!--<p class="alerts-text">Machines connected</p>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--<div class="col-lg-3">-->
+    <!--<div class="panel panel-default ">-->
+    <!--<div class="panel-body alert-info">-->
+    <!--<div class="col-xs-5">-->
+    <!--<i class="fa fa-exclamation fa-5x"></i>-->
+    <!--</div>-->
+    <!--<div class="col-xs-5 text-right">-->
+    <!--<p class="alerts-heading">7</p>-->
+    <!--<p class="alerts-text">Machine error notices</p>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--<div class="col-lg-3">-->
+    <!--<div class="panel panel-default ">-->
+    <!--<div class="panel-body alert-info">-->
+    <!--<div class="col-xs-5">-->
+    <!--<i class="fa fa-search fa-5x"></i>-->
+    <!--</div>-->
+    <!--<div class="col-xs-5 text-right">-->
+    <!--<p class="alerts-heading" id="search-machine">Search machine</p>-->
+    <!--<!--<p class="alerts-text">Mentions</p>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+
+
+    <!--eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-->
+
+    <!--<div class="row">-->
+    <!--<div class="col-lg-8">-->
+    <!--<div class="panel panel-primary">-->
+    <!--<div class="panel-heading">-->
+    <!--<h3 class="panel-title"><i class="fa fa-bar-chart-o"></i> {{tableName}}</h3>-->
+    <!--</div>-->
+    <!--<div class="panel-body">-->
+
+    <!--<div id="shieldui-grid1"></div>-->
+    <!--<div id="machineTable" ng-show="machineTable">-->
+
+    <!--<table ng-table="machineTableParams" show-filter="true" class="table myTable" >-->
+
+    <!--<tr ng-repeat="machine in machinesSplc" ng-click="hi(machine)">-->
+    <!--<td data-title="'Machine Name'"  filter="{ 'name': 'text' }" > {{machine.name}}</td>-->
+    <!--<td data-title="'Machine Id'" >{{machine.id}}</td>-->
+    <!--</tr>-->
+    <!--</table>-->
+    <!--</div>-->
+    <!--<div ng-show="!machineTable" class="tabs">-->
+    <!--<section>-->
+    <!--<ul ng-init="tab = 1">-->
+    <!--<li class="tab-links"><ul  >-->
+    <!--<li ng-class="{active:tab === 1}" class="liTab">-->
+    <!--<a href ng-click="tab = 1"> Counters </a>-->
+    <!--</li>-->
+    <!--<li ng-class="{active:tab === 2}" class="liTab">-->
+    <!--<a href ng-click="tab = 2" > Settings </a>-->
+    <!--</li>-->
+    <!--</ul></li>-->
+
+    <!--<div id="counterTable"     ng-show="tab === 1">-->
+    <!--<table ng-table="counterTableParams" show-filter="true" class="table myTable" >-->
+    <!--<tr ng-repeat="counter in curMacCntrsSplc">-->
+    <!--<td data-title="'Label'" filter="{ 'Label': 'text' }" >{{counter.Label}}</td>-->
+    <!--<td data-title="'Partial'">{{counter.Partial}}</td>-->
+    <!--<td data-title="'Family'" >{{counter.Familly}}</td>-->
+
+    <!--</tr>-->
+    <!--</table>-->
+    <!--</div>-->
+    <!--<div ng-app="settingTable" ng-show="tab === 2">-->
+    <!--<table ng-table="settingsTableParams" show-filter="true" class="table myTable" >-->
+    <!--<tr ng-repeat="setting in curMacStgSplc">-->
+    <!--<td data-title="'Label'" filter="{ 'Label': 'text' }">{{setting.Label}}</td>-->
+    <!--<td data-title="'Value'">{{setting.Value}}</td>-->
+    <!--<td data-title="'Family'">{{setting.Familly}}</td>-->
+
+    <!--</tr>-->
+    <!--</table>-->
+    <!--</div>-->
+
+    <!--</ul>-->
+    <!--</section>-->
+
+    <!--</div >-->
+
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--<!--                    <div class="col-lg-8">-->
+
+
+    <!--<div class="panel panel-primary">-->
+    <!--<div class="panel-heading">-->
+    <!--<h3 class="panel-title"><i class="fa fa-bar-chart-o"></i> {{tableName}}</h3>-->
+    <!--</div>-->
+    <!--<div class="panel-body">-->
+    <!--<div id="shieldui-grid1"></div>-->
+
+    <!--<div id="machineTable" ng-show="machineTable">-->
+    <!--<table ng-table="machineTableParams" class="table" >-->
+
+    <!--<tr ng-repeat="machine in machines" ng-click="hi(machine)">-->
+    <!--<td data-title="'Machine Name'"  >{{machine.name}}</td>-->
+    <!--<td data-title="'Machine Id'">{{machine.id}}</td>-->
+    <!--</tr>-->
+    <!--</table>-->
+    <!--</div>-->
+    <!--<div ng-show="!machineTable">-->
+    <!--new tabs and stuff:-->
+    <!--<div class="tabs">-->
+    <!--<ul class="tab-links" >-->
+    <!--<li class="active"><a href="#tab1">Counters</a></li>-->
+    <!--<li><a href="#tab2">Settings</a></li>-->
+    <!--<li><a href="#tab3">Tab #3</a></li>-->
+    <!--<li><a href="#tab4">Tab #4</a></li>-->
+    <!--</ul>-->
+
+    <!--<div class="tab-content">-->
+    <!--<div id="tab1" class="tab active">-->
+    <!--<table ng-table="counterTableParams" class="table" >-->
+    <!--<tr ng-repeat="counter in curMacCntrsSplc">-->
+    <!--<td data-title="'Label'">{{counter.Label}}</td>-->
+    <!--<td data-title="'Partial'">{{counter.Partial}}</td>-->
+    <!--<td data-title="'Family'">{{counter.Familly}}</td>-->
+
+    <!--</tr>-->
+    <!--</table>-->
+    <!--</div>-->
+
+    <!--<div id="tab2" class="tab">-->
+    <!--<table ng-table="settingsTableParams" class="table" >-->
+    <!--<tr ng-repeat="setting in curMacStgSplc">-->
+    <!--<td data-title="'Label'">{{setting.Label}}</td>-->
+    <!--<td data-title="'Value'">{{setting.Value}}</td>-->
+    <!--<td data-title="'Family'">{{setting.Familly}}</td>-->
+
+    <!--</tr>-->
+    <!--</table>-->
+    <!--</div>-->
+
+    <!--<div id="tab3" class="tab">-->
+    <!--</div>-->
+
+    <!--<div id="tab4" class="tab">-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--new tabs and stuff:-->
+
+    <!--</div >-->
+
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--<!--                <div class="col-lg-4">-->
+    <!--<div class="panel panel-primary">-->
+    <!--<div class="panel-heading">-->
+    <!--<h3 class="panel-title"><i class="fa fa-bar-chart-o"></i> Logins per week</h3>-->
+    <!--</div>-->
+    <!--<div class="panel-body">-->
+    <!--<div id="shieldui-chart2"></div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</div>-->
+
+
+    <!--eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-->
+
+</div>
+</div>
+
+</body>
+</html>

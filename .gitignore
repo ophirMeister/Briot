@@ -1,0 +1,13 @@
+/node_modules
+/public/tech/bower_components
+/public/ng-table2
+/public/ng-table
+/public/angular
+/public/angular-animate
+/public/tech/fonts
+/public/tech/font-awesome
+/public/tech/bootstrap
+/bower_components
+/bootstrap
+*.0
+*.ns
