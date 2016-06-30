@@ -38,8 +38,9 @@ var MachinesSchema = new Schema({
 var deviceDataSchema = new Schema({
     id: String,
     _id: String,
+    created_at: Date,
     data: Schema.Types.Mixed
-}, { collection: 'deviceData' },{ timestamps: { createdAt: 'created_at' } });
+}, { collection: 'deviceData' });
 
 var deviceSchema = new Schema({
     _id: String,

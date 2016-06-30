@@ -35,8 +35,9 @@ self.onmessage = function (data) {
     var deviceDataSchema = new Schema({
         id: String,
         _id: String,
+        created_at: Date,
         data: Schema.Types.Mixed
-    }, { collection: 'deviceData' },{ timestamps: { createdAt: 'created_at' } });
+    }, { collection: 'deviceData' });
 
     var str = ""; // Will store the contents of the file
     var parser = new xml2js.Parser();
@@ -237,7 +238,8 @@ self.onmessage = function (data) {
                                                         newMachine = machine({
                                                             id: id,
                                                             _id: token(),
-                                                            data: result
+                                                            data: result,
+                                                            created_at:date
                                                         }, {_id: false});
 
                                                         newMachine.save(function (err) {
