@@ -71,7 +71,7 @@ techApp.controller('MachineListCtrl', function ($scope, $filter, $q, ngTablePara
             url: "../../getMachines/",
             success: function (dataDB, textStatus, jqXHR) {
 
-                alert("came back with " + dataDB.length + "machines!")
+                //alert("came back with " + dataDB.length + "machines!")
                 //alert(JSON.stringify(dataDB[0]));
 
 
@@ -176,14 +176,13 @@ techApp.controller('MachineListCtrl', function ($scope, $filter, $q, ngTablePara
 
             },
             error: function (jqXHR, textStatus, errorThrown) {
-                alert('returned error with text: ' + errorThrown);
+                //alert('returned error with text: ' + errorThrown);
                 //alert('returned text status: ' + textStatus);
 
             }
         });
     }
 
-    alert("getting devices!");
     getDeviceList();
 
 
