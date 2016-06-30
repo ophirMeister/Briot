@@ -831,7 +831,8 @@ techApp.controller('MachineListCtrl', function ($scope, $filter, $q, ngTablePara
      */
 
     $scope.addDeviceSuccess = true;
-    $('#addDeviceSubmit').click(function (event) {
+
+    $(document).on("click", "#addDeviceSubmit", function() {
         event.preventDefault()
 
         //alert(
@@ -904,6 +905,79 @@ techApp.controller('MachineListCtrl', function ($scope, $filter, $q, ngTablePara
         });
 
     });
+//    $('#addDeviceSubmit').click(function (event) {
+//        event.preventDefault()
+//
+//        //alert(
+//        //    "clicked!"
+//        //);
+//        var id = $('#deviceId').val();
+//        var deviceServer = $('#deviceServer').val();
+//        var Optician_Shop = $('#Optician_Shop').val();
+//        var Optician_Name = $('#Optician_Name').val();
+//        var Optician_Surname = $('#Optician_Surname').val();
+//        var Address = $('#Address').val();
+//        var Zip = $('#Zip').val();
+//        var City = $('#City').val();
+//        var Country = $('#Country').val();
+//        var State = $('#State').val();
+//        var Zone = $('#Zone').val();
+//        var Email = $('#Email').val();
+//        var Group = $('#Group').val();
+//        var Phone_Number = $('#Phone_Number').val();
+//        var Mobile_Number = $('#Mobile_Number').val();
+//        var Fax = $('#Fax').val();
+//
+//        if (id == "" || deviceServer == "" || !IsEmail(Email)) {
+//            //alert("missing stuff");
+//            return;
+//        }
+//        ////alert("id: " + id + ", deviceServer: " + deviceServer +", Optician_Shop: " + Optician_Shop +", Optician_Name: " + Optician_Name +
+//        //", Optician_Surname: " + Optician_Surname +", Address: " + Address +", Zip: " + Zip +", City: " + City +
+//        //", Country: " + Country +", State: " + State +", Zone: " + Zone +", Email: " + Email +", Group: " + Group +
+//        //", Phone_Number: " + Phone_Number +", Mobile_Number: " + Mobile_Number +", Fax: " + Fax);
+//        $scope.addDeviceSuccess = false;
+//////      alert("Zip: " + name + ", and pass: " + pass);
+////
+//        $.ajax({
+//            type: 'POST',
+//            data: JSON.stringify({
+//                id: id,
+//                deviceServer: deviceServer,
+//                Optician_Shop: Optician_Shop,
+//                Optician_Name: Optician_Name,
+//                Optician_Surname: Optician_Surname,
+//                Address: Address,
+//                Zip: Zip,
+//                City: City,
+//                Country: Country,
+//                State: State,
+//                Zone: Zone,
+//                Email: Email,
+//                Group: Group,
+//                Phone_Number: Phone_Number,
+//                Mobile_Number: Mobile_Number,
+//                Fax: Fax,
+//            }),
+//            contentType: 'application/json',
+//
+//            url: "./../../addDevice",
+//            success: function (data, textStatus, jqXHR) {
+//                //alert('returned textStatus: ' + textStatus);
+//                getDeviceList();
+////            alert('returned public key: ' + data);
+//
+//
+//            },
+//            error: function (jqXHR, textStatus, errorThrown) {
+//                //alert("wtf?");
+//
+//                alert('returned error with text: ' + errorThrown);
+//                alert('returned text status: ' + textStatus);
+//            }
+//        });
+//
+//    });
 
 
     /**

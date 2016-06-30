@@ -16,25 +16,30 @@ app.use(express.static(__dirname + '/public'));
 app.use(express.bodyParser());
 app.use(express.bodyParser({uploadDir:'./updateFiles/updateDNL/'}));
 
+/*
+Database variables
+ */
+var mongodbUri = 'mongodb://admin:Admin!23@ds017193.mlab.com:17193/heroku_jt89c05w';
+var options = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } },
+    replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000 } } };
 // user schema:
 var Schema = mongoose.Schema;
 var UserSchema = new Schema({
     name: String,
     password: String,
     admin: Boolean
-});
+}, { collection: 'users' }, { timestamps: { createdAt: 'created_at' } });
 
 var MachinesSchema = new Schema({
     name: String,
     id: String
 });
 
-var machineSchema = new Schema({
+var deviceDataSchema = new Schema({
     id: String,
     _id: String,
-    date: Date,
     data: Schema.Types.Mixed
-});
+}, { collection: 'deviceData' },{ timestamps: { createdAt: 'created_at' } });
 
 var deviceSchema = new Schema({
     _id: String,
@@ -53,8 +58,8 @@ var deviceSchema = new Schema({
     Phone_Number: String,
     Mobile_Number: String,
     Fax: String
-});
-
+}, { collection: 'devices' });
+//{ capped: { size: 5120, max: 500, autoIndexId: false }},
 var updateSchema = new Schema({
     date: Date,
     Version: String,
@@ -92,12 +97,12 @@ app.post('/login', function (req, response) {
     var pass = req.body.pass;
 
     // connect to user database:
-    mongoose.connect('mongodb://127.0.0.1:27017/users');
+    mongoose.connect(mongodbUri, options);
     var db = mongoose.connection;
     db.on('error', console.error.bind(console, 'connection error:'));
 
     db.once('open', function callback() {
-
+        console.log("connected to DB!");
         // get user data.
         var User = mongoose.model('User', UserSchema);
 
@@ -115,10 +120,14 @@ app.post('/login', function (req, response) {
             } else { // If user found, check the password.
                 // get the password saved in the database.
                 var passToCheck = users[0].password;
+                console.log("pass to check: " + passToCheck);
+
                 // decipher the password.
                 var decipher1 = crypto.createDecipher('aes256', 'password');
                 var result = decipher1.update(passToCheck);
                 result += decipher1.final();
+                console.log("result: " +result);
+
                 // check to see if passwords match.
                 var match = (result == pass) ? true : false;
                 if (match) {
@@ -181,7 +190,8 @@ app.get('/log/:key/:user', function (req, response) {
 app.post('/addDevice', function (req, response) {
 
     // connect to database.
-    mongoose.connect('mongodb://127.0.0.1:27017/Devices');
+
+    mongoose.connect(mongodbUri, options);
     var db = mongoose.connection;
     db.on('error', console.error.bind(console, 'connection error:'));
 
@@ -208,22 +218,24 @@ app.post('/addDevice', function (req, response) {
             Mobile_Number: req.body.Mobile_Number,
             Fax: req.body.Fax
         };
-
+        console.log("device: %j", newDevice);
         // Add device. If device id exists, updates it's info to this one.
-        Device.update({_id: req.body.id}, newDevice, {upsert: true}, function (err, data) {
+        Device.create({_id: req.body.id}, newDevice, function (err, data) {
             if (err) {
+                console.log("error!")
                 console.log(err.message);
                 mongoose.disconnect();
                 response.status(400);
                 response.send();
                 return;
             } else {
+                mongoose.disconnect();
                 console.log("added: " + data._id);
                 response.status(200);
                 response.send();
             }
         });
-        mongoose.disconnect();
+        //mongoose.disconnect();
     });
 })
 
@@ -241,7 +253,7 @@ app.get('/newUser/:admin/:adminPass/:newName/:newPassword/:isAdmin', function (r
         var isAdmin = req.params.isAdmin;
         console.log("adding new user with: name: " + newName + ", pass: " + newPassword);
 
-        mongoose.connect('mongodb://127.0.0.1:27017/users');
+        mongoose.connect(mongodbUri, options);
 
         var db = mongoose.connection;
         console.log("var db created!");
@@ -342,7 +354,7 @@ app.get('/', function (req, response) {
  * Fetches all machines currently on database.
  */
 app.get('/getMachines/', function (req, response) {
-    mongoose.connect('mongodb://127.0.0.1:27017/Devices');
+    mongoose.connect('mongodb://admin:Admin!23@ds017193.mlab.com:17193/heroku_jt89c05w');
     var db = mongoose.connection;
     db.once('open', function callback() {
         var Device = mongoose.model('Device', deviceSchema);
@@ -357,78 +369,78 @@ app.get('/getMachines/', function (req, response) {
     });
 });
 
-/**
- * Retrieves the update file (DNL) for updating process.
- * Notice that the update file must be stored at a specific location. (currently at '/internet/upgrade').
- */
-app.get('/getUpdateFile/', function (req, response) {
-
-    // create an FTP connection.
-    var ftp = new JSFtp({
-        host: "91.212.157.71",
-        user: "internet@M2MBriot", // defaults to "anonymous"
-        pass: "Qc6T5a" // defaults to "@anonymous"
-
-    });
-
-    var date = 0;
-    // look at the update directory.
-    ftp.ls("/internet/upgrade", function (err, res) {
-        if (err) {
-            response.status(404).send("couldn't load update file.");
-        } else {
-            // look for DNL file.
-            res.forEach(function (file) {
-                if (file.name == "DNL") {
-                    // Save the file creation time.
-                    date = new  Date(file.time);
-                    mongoose.connect('mongodb://127.0.0.1:27017/Updates');
-                    var db = mongoose.connection;
-                    db.once('open', function callback() {
-                        var Update = mongoose.model('Update', updateSchema);
-                        // look for user:
-
-
-                        Update.find({date: date}, function (err, data) {
-
-                                if(err ) {
-                                    console.log("err");
-                                } else {
-                                    if(data.length > 0) {
-                                        console.log("found " + data.length + "devices");
-                                        response.status(200);
-                                        response.send(data);
-                                        mongoose.disconnect();
-                                    }
-                                    else{
-                                        console.log("found 0 devices!");
-
-                                    }
-
-                                }
-
-
-                            }
-                        )
-                        ;
-
-
-                    });
-                }
-            });
-        }
-    });
-
-
+///**
+// * Retrieves the update file (DNL) for updating process.
+// * Notice that the update file must be stored at a specific location. (currently at '/internet/upgrade').
+// */
+//app.get('/getUpdateFile/', function (req, response) {
+//
+//    // create an FTP connection.
+//    var ftp = new JSFtp({
+//        host: "91.212.157.71",
+//        user: "internet@M2MBriot", // defaults to "anonymous"
+//        pass: "Qc6T5a" // defaults to "@anonymous"
+//
+//    });
+//
+//    var date = 0;
+//    // look at the update directory.
+//    ftp.ls("/internet/upgrade", function (err, res) {
+//        if (err) {
+//            response.status(404).send("couldn't load update file.");
+//        } else {
+//            // look for DNL file.
+//            res.forEach(function (file) {
+//                if (file.name == "DNL") {
+//                    // Save the file creation time.
+//                    date = new  Date(file.time);
+//                    mongoose.connect('mongodb://127.0.0.1:27017/Updates');
+//                    var db = mongoose.connection;
+//                    db.once('open', function callback() {
+//                        var Update = mongoose.model('Update', updateSchema);
+//                        // look for user:
 //
 //
-////    console.log("trying to login with name: " + name + ", pass: " + pass)
-////    console.log("great!");
-////// connect to user database:
-
-
-
-});
+//                        Update.find({date: date}, function (err, data) {
+//
+//                                if(err ) {
+//                                    console.log("err");
+//                                } else {
+//                                    if(data.length > 0) {
+//                                        console.log("found " + data.length + "devices");
+//                                        response.status(200);
+//                                        response.send(data);
+//                                        mongoose.disconnect();
+//                                    }
+//                                    else{
+//                                        console.log("found 0 devices!");
+//
+//                                    }
+//
+//                                }
+//
+//
+//                            }
+//                        )
+//                        ;
+//
+//
+//                    });
+//                }
+//            });
+//        }
+//    });
+//
+//
+////
+////
+//////    console.log("trying to login with name: " + name + ", pass: " + pass)
+//////    console.log("great!");
+//////// connect to user database:
+//
+//
+//
+//});
 
 /**
  * Fetches machine data for a specific id.
@@ -443,15 +455,15 @@ app.get('/mchDB/:id', function (req, response) {
     var parser = new xml2js.Parser();
 
     // Connect to database to find machine.
-    mongoose.connect('mongodb://127.0.0.1:27017/machineBackup');
+    mongoose.connect(mongodbUri, options);
 
     var db = mongoose.connection;
     db.on('error', console.error.bind(console, 'connection error:'));
     db.once('open', function callback() {
 
         // create a machine model, and look for the machine with the given id.
-        var machine = mongoose.model('machine', machineSchema);
-        machine.find({id: id}, function (err, data) {
+        var deviceData = mongoose.model('machine', deviceDataSchema);
+        deviceData.find({id: id}, function (err, data) {
             if (err) {
                 response.status(400).send("DB connection error.");
                 return;

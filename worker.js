@@ -11,6 +11,11 @@ var fs = require("fs");
 //max number of saved machine data for each machine:
 var MAX_MACHINE_SAVES = 15;
 
+var mongodbUri = 'mongodb://admin:Admin!23@ds017193.mlab.com:17193/heroku_jt89c05w';
+var options = { server: { socketOptions: { keepAlive: 300000, connectTimeoutMS: 30000 } },
+    replset: { socketOptions: { keepAlive: 300000, connectTimeoutMS : 30000 } } };
+
+
 console.log('workerd initiated');
 self.onmessage = function (data) {
     console.log('worker looking for machine ID: ' + JSON.stringify(data));
@@ -26,25 +31,12 @@ self.onmessage = function (data) {
     }
 
     var Schema = mongoose.Schema;
-    var UserSchema = new Schema({
-        name: String,
-        password: String,
-        admin: Boolean
 
-    });
-
-    var MachinesSchema = new Schema({
-        name: String,
-        id: String
-    });
-
-    var machineSchema = new Schema({
+    var deviceDataSchema = new Schema({
         id: String,
         _id: String,
-        date: Date,
         data: Schema.Types.Mixed
-        // TODO create array of objects containing data and date
-    });
+    }, { collection: 'deviceData' },{ timestamps: { createdAt: 'created_at' } });
 
     var str = ""; // Will store the contents of the file
     var parser = new xml2js.Parser();
@@ -198,7 +190,7 @@ self.onmessage = function (data) {
                                         console.log("finished uploading file")
 
                                         console.log("got data, looking for XML head..");
-                                        var index =(server == "Europe") ? str.search("<Eeprom><ALTA_PRO>") : str.search("<Settings>");
+                                        var index = (server == "Europe") ? str.search("<Eeprom><ALTA_PRO>") : str.search("<Settings>");
 
                                         //var index = str.search("<Eeprom><ALTA_PRO>");
                                         if (index > -1) {
@@ -229,7 +221,7 @@ self.onmessage = function (data) {
 
                                                     console.log("trying to save to db");
 
-                                                    mongoose.connect('mongodb://127.0.0.1:27017/machineBackup');
+                                                    mongoose.connect(mongodbUri, options);
                                                     var db = mongoose.connection;
                                                     db.on('error', console.error.bind(console, 'connection error:'));
 
@@ -239,15 +231,15 @@ self.onmessage = function (data) {
                                                         console.log("connected to db!");
                                                         console.log("updated!");
 
-                                                        var machine = mongoose.model('machine', machineSchema);
+                                                        var machine = mongoose.model('machine', deviceDataSchema);
                                                         var date = new Date();
 
                                                         newMachine = machine({
                                                             id: id,
                                                             _id: token(),
-                                                            date: date,
                                                             data: result
                                                         }, {_id: false});
+
                                                         newMachine.save(function (err) {
                                                             if (err) {
                                                                 throw err;
@@ -256,7 +248,7 @@ self.onmessage = function (data) {
                                                             else {
                                                                 console.log("saved to DB!");
 
-                                                                machine.find({id: id}).sort('-date').exec(function (err, data) {
+                                                                machine.find({id: id}).sort('-created_at').exec(function (err, data) {
 
                                                                     if (err) {
                                                                         mongoose.disconnect();
