@@ -82,6 +82,7 @@ techApp.controller('MachineListCtrl', function ($scope, $filter, $q, ngTablePara
                     },
                         {
                             title: '<i class="glyphicon glyphicon-cloud-download"></i>',
+                            title: '<i class="glyphicon glyphicon-cloud-download"></i>',
                             events: "actionEvents",
                             field: 'action',
                             formatter: actionFormatter
@@ -460,8 +461,8 @@ techApp.controller('MachineListCtrl', function ($scope, $filter, $q, ngTablePara
                 var entryCounter = 0;
                 for (var entry = 0; entry < dataDB.length; entry++) {
                     var date = {};
-                    date.day = (new Date(dataDB[entry].date)).toLocaleDateString();
-                    date.time = (new Date(dataDB[entry].date)).toLocaleTimeString();
+                    date.day = (new Date(dataDB[entry].created_at)).toLocaleDateString();
+                    date.time = (new Date(dataDB[entry].created_at)).toLocaleTimeString();
                     $scope.dataEntriesDates[entry] = date;
                     $scope.entryCounter[entry] = entry;
                     $scope.showDevices[entry] = false;
@@ -483,8 +484,8 @@ techApp.controller('MachineListCtrl', function ($scope, $filter, $q, ngTablePara
                         var deviceInsertIdx = 0;
                         for (var entry = 0; entry < dataDB.length; entry++) {
                             var date = {};
-                            date.day = (new Date(dataDB[entry].date)).toLocaleDateString();
-                            date.time = (new Date(dataDB[entry].date)).toLocaleTimeString();
+                            date.day = (new Date(dataDB[entry].created_at)).toLocaleDateString();
+                            date.time = (new Date(dataDB[entry].created_at)).toLocaleTimeString();
                             //alert("looking for:" + date.day + " - " + date.time);
                             var foundDevice = false;
                             for (var dateIndex in selectedUpdate) {
