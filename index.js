@@ -120,17 +120,16 @@ app.post('/login', function (req, response) {
             } else { // If user found, check the password.
                 // get the password saved in the database.
                 var passToCheck = users[0].password;
-                console.log("pass to check: " + passToCheck);
 
                 // decipher the password.
                 var decipher1 = crypto.createDecipher('aes256', 'password');
                 var result = decipher1.update(passToCheck);
                 result += decipher1.final();
-                console.log("result: " +result);
 
                 // check to see if passwords match.
                 var match = (result == pass) ? true : false;
                 if (match) {
+                    console.log("matchine passowrds, connecting user [" + name +"].");
                     // if passwords match, return success response, and create a temporary login key.
                     // This key is given to the user, and is held by the server as well.
                     logKey.generateKeys();
