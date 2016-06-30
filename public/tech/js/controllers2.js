@@ -183,7 +183,7 @@ techApp.controller('MachineListCtrl', function ($scope, $filter, $q, ngTablePara
             }
         });
     }
-
+    alert("hello world!");
     getDeviceList();
 
 
