@@ -1,0 +1,63 @@
+{
+  "name": "angular-animate",
+  "version": "1.3.7",
+  "description": "AngularJS module for animations",
+  "main": "angular-animate.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/angular/angular.js.git"
+  },
+  "keywords": [
+    "angular",
+    "framework",
+    "browser",
+    "animation",
+    "client-side"
+  ],
+  "author": {
+    "name": "Angular Core Team",
+    "email": "angular-core+npm@google.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/angular/angular.js/issues"
+  },
+  "homepage": "http://angularjs.org",
+  "gitHead": "f4f581287139a357fb0f50fea52d5e887d3d5540",
+  "_id": "angular-animate@1.3.7",
+  "_shasum": "25cb6f9d60db13a88ff0b2b7dc97028e9de2bd45",
+  "_from": "angular-animate@",
+  "_npmVersion": "2.0.2",
+  "_nodeVersion": "0.10.26",
+  "_npmUser": {
+    "name": "angularcore",
+    "email": "angular-core+npm@google.com"
+  },
+  "maintainers": [
+    {
+      "name": "akalinovski",
+      "email": "a.kalinovski@gmail.com"
+    },
+    {
+      "name": "ws-malysheva",
+      "email": "ws.malysheva@gmail.com"
+    },
+    {
+      "name": "pitbeast",
+      "email": "PitBeast777@gmail.com"
+    },
+    {
+      "name": "angularcore",
+      "email": "angular-core+npm@google.com"
+    }
+  ],
+  "dist": {
+    "shasum": "25cb6f9d60db13a88ff0b2b7dc97028e9de2bd45",
+    "tarball": "http://registry.npmjs.org/angular-animate/-/angular-animate-1.3.7.tgz"
+  },
+  "directories": {},
+  "_resolved": "https://registry.npmjs.org/angular-animate/-/angular-animate-1.3.7.tgz"
+}
