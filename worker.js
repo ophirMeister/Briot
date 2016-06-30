@@ -35,7 +35,7 @@ self.onmessage = function (data) {
     var deviceDataSchema = new Schema({
         id: String,
         _id: String,
-        created_at: Date,
+        //created_at: Date,
         data: Schema.Types.Mixed
     }, { collection: 'deviceData' });
 
@@ -239,7 +239,7 @@ self.onmessage = function (data) {
                                                             id: id,
                                                             _id: token(),
                                                             data: result,
-                                                            created_at:date
+                                                            //created_at:date
                                                         }, {_id: false});
 
                                                         newMachine.save(function (err) {
