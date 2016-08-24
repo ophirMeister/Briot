@@ -569,7 +569,6 @@ app.get('/updateRequest/:id/:server/:filePath', function (req, response) {
 
         var id = req.params.id;
         var server = req.params.server;
-        //id = id.concat("/");
         console.log("calling worker with: " + id);
         console.log("calling worker with: " + server);
 
@@ -587,10 +586,8 @@ app.get('/updateRequest/:id/:server/:filePath', function (req, response) {
                 sendError();
             }
             else {
-
                 sendResult(msg.data);
             }
-
         };
         w.postMessage({id:id, server:server, filePath:filePath});
 
@@ -599,22 +596,17 @@ app.get('/updateRequest/:id/:server/:filePath', function (req, response) {
             response.status(200);
             response.send(data);
             console.log("ftp results send *-*-*-*-*-*-*-*-*-*-.");
-            //response.end();
-
         }
 
         function sendError() {
             console.log("sending error result");
             response.status(404);
             response.send();
-            //response.end();
-
         }
     } else {
         console.log("machine update in progress.");
         response.status(400);
         response.send("machine update in progress!");
-        //response.end();
     }
 
 });

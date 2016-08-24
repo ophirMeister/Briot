@@ -83,7 +83,6 @@ self.onmessage = function (data) {
 
     });
 
-    //
     function sendRequestFile() {
         fs.readFile('./updateResponse/TODO', function (err, buffer) {
             if (err) {
@@ -106,8 +105,6 @@ self.onmessage = function (data) {
                             if (file.name == "TODO") {
                                 console.log("found old answer file. ")
                                 oldAnswerFile = true;
-                                //oldAnswerFileDate = new Date(file.time);
-
                             }
                         });
 
@@ -117,8 +114,6 @@ self.onmessage = function (data) {
                             ftp.put(buffer, TODO_QUESTION, function (hadError) {
                                 if (!hadError) {
                                     oldAnswerFileDate = new Date();
-
-
                                     console.log("added question, waiting for answer");
                                     getAnswer(new Date());
                                 }
