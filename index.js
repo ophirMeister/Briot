@@ -9,7 +9,7 @@ var Worker = require('workerjs');
 var mongoose = require('mongoose');
 var crypto = require('crypto');
 var mkdirp = require('mkdirp');
-var formidable = require('formidable');
+var mv = require('mv');
 
 app.use(express.json());
 app.set('port', (process.env.PORT || 5000));
@@ -656,72 +656,40 @@ app.get('/updateRequest/:id/:server/:filePath', function (req, response) {
  * Receives the DNL file and saves it locally. Creates a new directory with the file name and renames the file "DNL".
  */
 app.post('/file-upload-DNL', function(req, res, next) {
-
-
-    // create an incoming form object
-    var form = new formidable.IncomingForm();
-
-    // specify that we want to allow the user to upload multiple files in a single request
-    form.multiples = true;
-
-    // store all uploads in the /uploads directory
-    form.uploadDir = path.join(__dirname, '/uploads');
-
-    // every time a file has been uploaded successfully,
-    // rename it to it's orignal name
-    form.on('file', function(field, file) {
-        fs.rename(file.path, path.join(form.uploadDir, file.name));
+    // get the temporary location of the file
+    var tmp_path = req.files.DNLfile.path;
+    // set where the file should actually exists
+    var fileName =  req.files.DNLfile.name.split(".")[0];
+    // New directory path.
+    var target_path = './updateFiles/' + fileName + '/';
+    // Create new directory.
+    mkdirp(target_path, function (err) {
+        if (err) {
+            console.error("couldn't create folder");
+            res.send({copied: false, path: "", unlinked: false, error: "couldn't create folder"});
+        } else {
+            var filePath = target_path + '/DNL';
+            console.log("target path: " + target_path);
+            // move the file from the temporary location to the intended location
+            mv(tmp_path, filePath, function(err) {
+                if ( err ) {
+                    console.log('ERROR: ' + err);
+                    res.send({copied: false, path: "", unlinked: false, error: err});
+                } else {
+                    console.log("file added, deleting temp file");
+                    // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
+                    fs.unlink(tmp_path, function() {
+                        if (err) {
+                            console.log('ERROR: ' + err);
+                            res.send({copied: true, path: fileName, unlinked: false, error: "was not able to delete temp file"});
+                        }
+                        console.log("deleted old file");
+                        res.send({copied: true, path: fileName, unlinked: true, error: ""});
+                    });
+                }
+            });
+        };
     });
-
-    // log any errors that occur
-    form.on('error', function(err) {
-        console.log('An error has occured: \n' + err);
-    });
-
-    // once all the files have been uploaded, send a response to the client
-    form.on('end', function() {
-        res.end('success');
-    });
-
-    // parse the incoming request containing the form data
-    form.parse(req);
-
-
-
-    //// get the temporary location of the file
-    //var tmp_path = req.files.DNLfile.path;
-    //// set where the file should actually exists.
-    //var fileName =  req.files.DNLfile.name.split(".")[0];
-    //// New directory path.
-    //var target_path = './updateFiles/' + fileName + '/';
-    //// Create new directory.
-    //mkdirp(target_path, function (err) {
-    //    if (err) {
-    //        console.error("couldn't create folder");
-    //        res.send({copied: false, path: "", unlinked: false, error: "couldn't create folder"});
-    //    } else {
-    //        var filePath = target_path + '/DNL';
-    //        console.log("target path: " + target_path);
-    //        // move the file from the temporary location to the intended location
-    //        fs.rename(tmp_path, filePath, function(err) {
-    //            if ( err ) {
-    //                console.log('ERROR: ' + err);
-    //                res.send({copied: false, path: "", unlinked: false, error: err});
-    //            } else {
-    //                console.log("file added, deleting temp file");
-    //                // delete the temporary file, so that the explicitly set temporary upload dir does not get filled with unwanted files
-    //                fs.unlink(tmp_path, function() {
-    //                    if (err) {
-    //                        console.log('ERROR: ' + err);
-    //                        res.send({copied: true, path: fileName, unlinked: false, error: "was not able to delete temp file"});
-    //                    }
-    //                    console.log("deleted old file");
-    //                    res.send({copied: true, path: fileName, unlinked: true, error: ""});
-    //                });
-    //            }
-    //        });
-    //    };
-    //});
 });
 
 
