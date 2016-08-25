@@ -565,7 +565,7 @@ app.get('/updateRequest/:id/:server/:filePath', function (req, response) {
         tokens.push(token);
         // get a worker:
         var w = new Worker('workerUpdateRequest.js');
-        var filePath = './updateFiles/' + req.params.filePath + '/';
+        var filePath = './updateFiles/update/' + req.params.filePath + '/';
 
 
         var id = req.params.id;
@@ -661,7 +661,7 @@ app.post('/file-upload-DNL', function(req, res, next) {
     // set where the file should actually exists
     var fileName =  req.files.DNLfile.name.split(".")[0];
     // New directory path.
-    var target_path = './updateFiles/' + fileName + '/';
+    var target_path = './updateFiles/update/' + fileName + '/';
     // Create new directory.
     mkdirp(target_path, function (err) {
         if (err) {
